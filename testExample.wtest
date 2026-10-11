@@ -1,9 +1,83 @@
-import example.pepita
+import plagas.*
+import elementos.*
 
-describe "group of tests for pepita" {
 
-  test "pepita has initial energy" {
-    assert.equals(100, pepita.energy())
+describe "Tests de Plagas y Elementos" {
+
+  test "Elementos son buenos según sus condiciones" {
+    const hogarBueno = new Hogar(mugre = 10, confort = 30)
+    const hogarMalo = new Hogar(mugre = 20, confort = 30)
+    const huerta = new Huerta(capacidadDeProduccion = 150) 
+    const mascota = new Mascota(nivelDeSalud = 300)
+
+    assert.that(hogarBueno.esBueno())
+    assert.notThat(hogarMalo.esBueno())
+    assert.that(huerta.esBueno())
+    assert.that(mascota.esBueno())
   }
 
+  test "Barrio es copado solo si tiene más elementos buenos que no buenos" {
+    const barrio = new Barrio()
+    const h1 = new Hogar(mugre = 5, confort = 20)
+    const h2 = new Hogar(mugre = 0, confort = 10)
+    const m1 = new Mascota(nivelDeSalud = 200) 
+
+    barrio.agregarElemento(h1)
+    barrio.agregarElemento(h2)
+    barrio.agregarElemento(m1)
+
+    assert.that(barrio.esCopado())
+  }
+
+  
+  test "Transmisión de enfermedades y nivel de daño según el tipo de plaga" {
+    const cucarachas = new Cucarachas(poblacion = 30, pesoPromedio = 8)
+    const mosquitosTransmiten = new Mosquitos(poblacion = 12) 
+    const mosquitosNoTransmiten = new Mosquitos(poblacion = 10) 
+
+    assert.equals(15, cucarachas.nivelDeDano())
+    assert.notThat(cucarachas.transmiteEnfermedades()) 
+
+    assert.equals(12, mosquitosTransmiten.nivelDeDano())
+    assert.that(mosquitosTransmiten.transmiteEnfermedades())
+    assert.notThat(mosquitosNoTransmiten.transmiteEnfermedades())
+  }
+
+  
+  test "Ataque de Cucarachas sobre Hogar" {
+    const hogar = new Hogar(mugre = 10, confort = 50)
+    const cucarachas = new Cucarachas(poblacion = 30, pesoPromedio = 8)
+
+    cucarachas.atacar(hogar)
+
+    
+    assert.equals(25, hogar.mugre())
+
+    
+    assert.equals(33, cucarachas.poblacion())
+    assert.equals(10, cucarachas.pesoPromedio())
+  }
+
+  test "Ataque de Pulgas sobre Huerta" {
+    const huerta = new Huerta(capacidadDeProduccion = 100)
+    const pulgas = new Pulgas(poblacion = 20) 
+
+    pulgas.atacar(huerta)
+
+  
+    assert.equals(86, huerta.capacidadDeProduccion())
+    assert.equals(22, pulgas.poblacion()) 
+  }
+
+  test "Ataque de Garrapatas sobre Mascota (caso particular de aumento 20%)" {
+    const mascota = new Mascota(nivelDeSalud = 300)
+    const garrapatas = new Garrapatas(poblacion = 20) 
+
+    garrapatas.atacar(mascota)
+
+    
+    assert.equals(260, mascota.nivelDeSalud())
+  
+    assert.equals(24, garrapatas.poblacion())
+  }
 }
